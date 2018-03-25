@@ -1,5 +1,7 @@
 pub use constants;
 
+/// A struct representing an individual 'square', or distinct location, in the maze.
+/// It contains 4 walls, any number of which may be carved.
 #[derive(Clone, Debug)]
 pub struct Square {
     pub wall_present: [bool; constants::NUM_DIRECTIONS as usize],
@@ -7,7 +9,7 @@ pub struct Square {
 }
 
 impl Square {
-
+    /// Creates a new, initialized Square.
     pub fn new() -> Square {
         Square {
             wall_present: [true, true, true, true],
@@ -15,16 +17,47 @@ impl Square {
         }
     }
     
+    /// Removes a wall in the specified direction.
+    /// 
+    /// # Example:
+    /// ```
+    /// use mazegame::constants;
+    /// use mazegame::maze::square;
+    /// 
+    /// let mut sq = square::Square::new();
+    /// sq.break_wall(constants::DIR_NORTH);
+    /// ```
     pub fn break_wall(&mut self, dir: u32) {
         self.set_wall_state(dir, false);
     }
 
+    /// Creates a wall in the specified direction.
+    /// 
+    /// # Example:
+    /// ```
+    /// use mazegame::constants;
+    /// use mazegame::maze::square;
+    /// 
+    /// let mut sq = square::Square::new();
+    /// sq.build_wall(constants::DIR_NORTH);
+    /// ```
     pub fn build_wall(&mut self, dir: u32) {
         self.set_wall_state(dir, true);
     }
 
+    /// Returns whether the Square is 'carved' - that is, at least one wall has been removed.
+    /// 
+    /// # Example:
+    /// ```
+    /// use mazegame::constants;
+    /// use mazegame::maze::square;
+    /// 
+    /// let mut sq = square::Square::new();
+    /// sq.break_wall(constants::DIR_NORTH);
+    /// let result = sq.is_carved();
+    /// assert_eq!(true, result);
+    /// ```
     pub fn is_carved(&self) -> bool {
-        // If any wall is missing, the square is considered 'carved'.
         if self.is_wall_present(constants::DIR_NORTH) == false { return true; }
         if self.is_wall_present(constants::DIR_SOUTH) == false { return true; }
         if self.is_wall_present(constants::DIR_EAST) == false { return true; }
@@ -32,6 +65,22 @@ impl Square {
         return false;
     }
 
+    /// Returns the state of the wall in a given direction (either present or absent).
+    /// 
+    /// # Example:
+    /// ```
+    /// use mazegame::constants;
+    /// use mazegame::maze::square;
+    /// 
+    /// let mut sq = square::Square::new();
+    /// 
+    /// let result = sq.is_wall_present(constants::DIR_NORTH);
+    /// assert_eq!(true, result);
+    /// 
+    /// sq.break_wall(constants::DIR_NORTH);
+    /// let result = sq.is_wall_present(constants::DIR_NORTH);
+    /// assert_eq!(false, result);
+    /// ```
     pub fn is_wall_present(&self, dir: u32) -> bool {
         match dir {
             constants::DIR_NORTH => {
@@ -46,10 +95,13 @@ impl Square {
             constants::DIR_WEST => {
                 self.wall_present[constants::DIR_WEST as usize]
             }
-            _ => { false }  // Consider using Result?
+            _ => { false } 
         }
     }
 
+    //
+    // Internal - set the state of a particular wall in the square (present or absent).
+    //
     fn set_wall_state(&mut self, dir: u32, state: bool) {
         match dir {
             constants::DIR_NORTH => { 
