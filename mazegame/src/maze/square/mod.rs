@@ -5,7 +5,7 @@ pub use constants;
 #[derive(Clone, Debug)]
 pub struct Square {
     pub wall_present: [bool; constants::NUM_DIRECTIONS as usize],
-    pub id: u32,
+    pub id: i32,
 }
 
 impl Square {
@@ -13,7 +13,7 @@ impl Square {
     pub fn new() -> Square {
         Square {
             wall_present: [true, true, true, true],
-            id: 0,
+            id: constants::ID_UNCARVED,
         }
     }
     
@@ -43,6 +43,14 @@ impl Square {
     /// ```
     pub fn build_wall(&mut self, dir: u32) {
         self.set_wall_state(dir, true);
+    }
+
+    pub fn is_part_of_room(&self) -> bool {
+        if self.id == constants::ID_MAZE_PATH || self.id == constants::ID_UNCARVED {
+            false
+        } else {
+            true
+        }
     }
 
     /// Returns whether the Square is 'carved' - that is, at least one wall has been removed.
